@@ -5,11 +5,12 @@ class ReactiveEffect {
     }
     run() {
         activeEffect = this
-        this._fn()
+        return this._fn()
     }
 }
 
 const targetMap = new Map()
+// 收集依赖方法
 export function track(target, key) {
     // target -> key -> dep
     let depsMap = targetMap.get(target)
@@ -26,6 +27,7 @@ export function track(target, key) {
     dep.add(activeEffect)
 }
 
+// 触发依赖方法
 export function trigger(target, key) {
     let depsMap = targetMap.get(target)
     let dep = depsMap.get(key)
@@ -38,4 +40,5 @@ let activeEffect
 export function effect(fn) {
     const _effect = new ReactiveEffect(fn)
     _effect.run()
+    return _effect.run.bind(_effect)
 }
