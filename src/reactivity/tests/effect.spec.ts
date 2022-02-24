@@ -63,6 +63,9 @@ describe('effect', () => {
     })
 
     it('stop', () => {
+        // 1.给定一个stop函数,传入effect返回的runner
+        // 2.当调用stop(runner)后,响应式的值发生改变,dummy不会发生更新,即effect(fn)的fn并不会执行
+        // 3.再次调用runner(),dummy的值更新到最新
         let dummy
         const obj = reactive({ prop: 1 })
         const runner = effect(() => {
@@ -71,7 +74,9 @@ describe('effect', () => {
         obj.prop = 2
         expect(dummy).toBe(2)
         stop(runner)
-        obj.prop = 3
+        // obj.prop = 3
+        // 此时换成obj.prop++会导致测试不通过,原因是obj.prop++会同时触发get,导致重新收集依赖
+        obj.prop++
         expect(dummy).toBe(2)
 
         // stopped effect should still be manually callable
@@ -81,21 +86,21 @@ describe('effect', () => {
 
     it('onStop', () => {
         const obj = reactive({
-          foo: 1
+            foo: 1
         })
         const onStop = jest.fn()
         let dummy
         const runner = effect(
-          () => {
-            dummy = obj.foo
-          },
-          {
-            onStop,
-          }
+            () => {
+                dummy = obj.foo
+            },
+            {
+                onStop,
+            }
         )
-    
+
         stop(runner)
         expect(onStop).toBeCalledTimes(1)
-      })
+    })
 
 })
