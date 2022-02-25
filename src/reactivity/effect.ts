@@ -43,9 +43,11 @@ function cleanUpEffect(effect) {
     // 因为dep已经清空了,所以deps也可以直接清空
     effect.deps.length = 0
 }
+
 function isTracking() {
     return shouldTrack && activeEffect !== undefined
 }
+
 const targetMap = new Map()
 // 收集依赖方法
 export function track(target, key) {
