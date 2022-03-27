@@ -5,6 +5,7 @@ import { reactive } from './reactive'
 class RefImpl {
     _value: any
     _rawValue: any
+    public __v_isRef = true
     public dep
     constructor(value) {
         this._rawValue = value
@@ -33,6 +34,30 @@ function trackRefValue(ref) {
         trackEffects(ref.dep)
     }
 }
+
 export function ref(value) {
     return new RefImpl(value)
+}
+
+export function isRef(ref) {
+    return !!ref.__v_isRef
+}
+
+export function unRef(ref) {
+    return isRef(ref) ? ref.value : ref
+}
+
+export function proxyRefs(objectWithRefs) {
+    return new Proxy(objectWithRefs, {
+        get(target, key) {
+            return unRef(Reflect.get(target, key))
+        },
+        set(target, key, value) {
+            if (isRef(target[key]) && !isRef(value)) {
+                return (target[key].value = value)
+            } else {
+                return Reflect.set(target, key, value)
+            }
+        }
+    })
 }
