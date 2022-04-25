@@ -2,6 +2,7 @@ import { h, ref } from "../../lib/mini-vue.esm.js";
 
 const count = ref(0);
 
+window.self = null
 const HelloWorld = {
     name: "HelloWorld",
     setup () { },
@@ -23,10 +24,15 @@ const HelloWorld = {
 
 export default {
     name: "App",
-    setup () { },
+    setup () {
+        return {
+            msg: '啦啦啦啦'
+        }
+    },
 
     render () {
-        return h("div", { tId: 1 }, [h("p", {class:"red"}, "主页"), h(HelloWorld)]);
+        window.self = this
+        return h("div", { tId: 1 }, [h("p", { class: "red" }, this.msg)]);
         // return h("div", { id: "root" }, "hi,mini-vue")
     },
 };
